@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post
 from .forms import  PostModelForm, CommentForm
+from django.contrib.auth.decorators import login_required
+
 
 def home(request):
     return render(request, 'base.html')
-
+@login_required
 def post_list(request):
     posts = Post.objects.all().order_by('-created_at')
     return render(request, 'myapp/post_list.html', {'posts': posts})
 
-
+@login_required
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     comments = post.comments.all().order_by('-created_at')
@@ -30,25 +32,7 @@ def post_detail(request, post_id):
         'comment_form': comment_form,
     })
 
-
-
-# def post_create_form(request):
-#     if request.method == 'POST':
-#         form = PostForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             Post.objects.create(
-#                 title=form.cleaned_data['title'],
-#                 content=form.cleaned_data['content'],
-#                 rate=form.cleaned_data['rate'],
-#                 image=form.cleaned_data['image']
-#             )
-#             return redirect('post_list')
-#     else:
-#         form = PostForm()
-#     return render(request, 'myapp/post_create.html', {'form': form, 'title': 'Создание поста (Form)'})
-
-
-
+@login_required
 def post_create_modelform(request):
     if request.method == 'POST':
         form = PostModelForm(request.POST, request.FILES)
